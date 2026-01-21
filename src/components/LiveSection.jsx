@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Play, Clock } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Play, Clock, Radio } from 'lucide-react';
+import SectionTitle from './SectionTitle';
 import liveShows from '../data/liveData';
 
 export default function LiveSection() {
@@ -14,121 +15,107 @@ export default function LiveSection() {
     };
 
     return (
-        <div className="py-6 px-4 md:px-8 relative">
-            {/* Header */}
-            <div className="mb-4 md:mb-6 flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
-                        <div className="flex items-center gap-1.5 md:gap-2">
-                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-red-600 rounded-full animate-pulse"></div>
-                            <span className="text-red-600 font-bold text-xs uppercase tracking-wider">En Direct</span>
-                        </div>
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-black">À Regarder Maintenant</h2>
-                </div>
+        <div className="py-6 px-4 md:px-8 relative overflow-hidden">
+            {/* Background Ambient Glow removed - Global glow takes over */}
 
-                {/* Scroll Buttons - Hidden on mobile */}
-                <div className="hidden lg:flex gap-2">
+            {/* Header */}
+            <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <SectionTitle
+                    icon={Radio}
+                    badge="Live Stream"
+                    title="À REGARDER"
+                    highlight="MAINTENANT"
+                    color="srtb-red"
+                />
+
+                <div className="flex gap-3">
                     <button
                         onClick={() => scroll('left')}
-                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+                        className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
                     >
-                        <ChevronLeft className="w-5 h-5 text-white" />
+                        <ChevronLeft className="w-6 h-6 text-zinc-400 group-hover:text-white" />
                     </button>
                     <button
                         onClick={() => scroll('right')}
-                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+                        className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
                     >
-                        <ChevronRight className="w-5 h-5 text-white" />
+                        <ChevronRight className="w-6 h-6 text-zinc-400 group-hover:text-white" />
                     </button>
                 </div>
             </div>
 
-            {/* Cards Container - Mobile Optimized */}
+            {/* Scrollable Container */}
             <div
                 ref={scrollRef}
-                className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth pb-8"
+                style={{ scrollbarWidth: 'none' }}
             >
                 {liveShows.map((show, index) => (
                     <motion.div
                         key={show.id}
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: index * 0.08 }}
-                        whileHover={{ y: -8, scale: 1.02 }}
-                        className="flex-shrink-0 w-[280px] md:w-[320px] group cursor-pointer"
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        whileHover={{ y: -10 }}
+                        className="flex-shrink-0 w-[300px] md:w-[380px] group relative"
                     >
-                        <div className="relative overflow-hidden rounded-xl">
-                            {/* Thumbnail */}
-                            <div className="relative aspect-video">
-                                <img
-                                    src={show.image}
-                                    alt={show.title}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
+                        <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/5 shadow-2xl bg-zinc-900">
+                            {/* Image with Parallax-like scale */}
+                            <motion.img
+                                src={show.image}
+                                alt={show.title}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100"
+                            />
 
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
+                            {/* Vignette */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-                                {/* Live Badge */}
-                                {show.isLive && (
-                                    <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10">
-                                        <div className="flex items-center gap-1 md:gap-1.5 bg-red-600 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-lg">
-                                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full animate-pulse"></div>
-                                            <span className="text-white text-xs font-bold uppercase tracking-wide">Direct</span>
-                                        </div>
-                                    </div>
-                                )}
+                            {/* Floating Glassmorphic Badges */}
+                            <div className="absolute top-4 left-4 z-20">
+                                <div className="flex items-center gap-2 bg-red-600 px-3 py-1.5 rounded-full shadow-[0_0_20px_rgba(220,38,38,0.5)]">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+                                    <span className="text-white text-[10px] font-black uppercase tracking-widest">En Direct</span>
+                                </div>
+                            </div>
 
-                                {/* Time Badge */}
-                                {show.time && (
-                                    <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg">
-                                        <div className="flex items-center gap-1">
-                                            <Clock className="w-3 h-3 text-white" />
-                                            <span className="text-white text-xs font-bold">{show.time}</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Play Button */}
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                    <div className="w-14 md:w-16 h-14 md:h-16 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center border-2 border-white/50">
-                                        <Play className="w-6 md:w-7 h-6 md:h-7 text-white fill-white ml-1" />
+                            <div className="absolute top-4 right-4 z-20">
+                                <div className="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10">
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="w-3.5 h-3.5 text-red-500" />
+                                        <span className="text-white text-[10px] font-bold uppercase tracking-tight">{show.time}</span>
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Bottom Info Overlay */}
-                                <div className="absolute bottom-0 inset-x-0 p-3 md:p-4 z-10">
-                                    {/* Channel */}
-                                    <div className="flex items-center gap-2 mb-1 md:mb-2">
-                                        <span className="text-xs font-bold text-red-500 uppercase tracking-wider">
-                                            {show.channel}
-                                        </span>
-                                    </div>
+                            {/* Play Hover State */}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                                <div className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transform scale-0 group-hover:scale-100 transition-transform duration-500">
+                                    <Play className="w-7 h-7 fill-current ml-1" />
+                                </div>
+                            </div>
 
-                                    {/* Title */}
-                                    <h3 className="text-white font-bold text-base md:text-lg mb-1 line-clamp-1">
+                            {/* Info Box - Solid Bar Style for "Pro" look */}
+                            <div className="absolute bottom-0 inset-x-0 p-6 z-20">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-red-500 text-[10px] font-black uppercase tracking-[0.3em] mb-1">
+                                        {show.channel}
+                                    </span>
+                                    <h3 className="text-white font-black text-xl md:text-2xl tracking-tighter line-clamp-1 drop-shadow-md">
                                         {show.title}
                                     </h3>
-
-                                    {/* Description - hidden on mobile */}
-                                    <p className="hidden md:block text-gray-300 text-sm line-clamp-2">
+                                    <p className="text-zinc-400 text-xs line-clamp-2 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform md:translate-y-2 md:group-hover:translate-y-0">
                                         {show.description}
                                     </p>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Subtle Glow behind each card on hover */}
+                        <div className="absolute -inset-1 bg-gradient-to-br from-red-600/20 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
                     </motion.div>
                 ))}
             </div>
-
-            <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
         </div>
     );
 }

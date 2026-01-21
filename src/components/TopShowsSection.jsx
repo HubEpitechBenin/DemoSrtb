@@ -1,7 +1,122 @@
-import { useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Play, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Play, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
+import SectionTitle from './SectionTitle';
 import topShows from '../data/topShowsData';
+
+const RankCard = ({ show, index }) => {
+    const cardRef = useRef(null);
+    const [isHovered, setIsHovered] = useState(false);
+
+    // 3D Tilt Logic
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const mouseXSpring = useSpring(x);
+    const mouseYSpring = useSpring(y);
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+    const handleMouseMove = (e) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = (mouseX / width) - 0.5;
+        const yPct = (mouseY / height) - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+        setIsHovered(false);
+    };
+
+    return (
+        <motion.div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={handleMouseLeave}
+            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}
+            className="group relative cursor-pointer"
+        >
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-[2/3] shadow-2xl bg-zinc-900 border border-white/5 transition-colors duration-500 group-hover:border-srtb-green/30">
+                {/* Image */}
+                <motion.img
+                    src={show.image}
+                    alt={show.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100"
+                />
+
+                {/* Rank Number - Ultra Premium Glass Style */}
+                <div
+                    className="absolute top-2 left-2 md:top-4 md:left-4 z-20"
+                    style={{ transform: "translateZ(80px)" }}
+                >
+                    <div className="relative">
+                        <span
+                            className="text-7xl md:text-9xl font-black italic select-none"
+                            style={{
+                                color: 'transparent',
+                                WebkitTextStroke: '2px rgba(255,255,255,0.2)',
+                                filter: isHovered ? 'drop-shadow(0 0 20px rgba(0,135,81,0.5))' : 'none',
+                                transition: 'all 0.5s ease'
+                            }}
+                        >
+                            {show.rank}
+                        </span>
+                        {isHovered && (
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 0.1 }}
+                                className="absolute inset-0 text-7xl md:text-9xl font-black italic text-white blur-sm select-none"
+                            >
+                                {show.rank}
+                            </motion.span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Top Badge */}
+                {show.badge && (
+                    <div className="absolute top-4 right-4 z-20">
+                        <div className="bg-srtb-green px-3 py-1.5 rounded-full text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
+                            {show.badge}
+                        </div>
+                    </div>
+                )}
+
+                {/* Overlay Information */}
+                <div className="absolute bottom-0 inset-x-0 p-4 md:p-6 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
+                    <span className="text-srtb-green text-[10px] font-black uppercase tracking-[0.3em] mb-1 block">
+                        {show.channel}
+                    </span>
+                    <h3 className="text-white font-black text-sm md:text-lg tracking-tight line-clamp-2 leading-tight group-hover:text-srtb-yellow transition-colors">
+                        {show.title}
+                    </h3>
+                </div>
+
+                {/* Play Action */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                    <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transform scale-0 group-hover:scale-100 transition-transform duration-500">
+                        <Play className="w-6 h-6 fill-current ml-1" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Glowing Aura */}
+            <div className="absolute -inset-1 bg-gradient-to-br from-white/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
+        </motion.div>
+    );
+};
 
 export default function TopShowsSection() {
     const scrollRef = useRef(null);
@@ -14,168 +129,39 @@ export default function TopShowsSection() {
     };
 
     return (
-        <div className="py-6 px-4 md:px-8">
-            {/* Title */}
-            <div className="mb-4 md:mb-6 flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
-                        <Star className="w-5 h-5 md:w-6 md:h-6 text-srtb-yellow fill-srtb-yellow" />
-                        <h2 className="text-2xl md:text-3xl font-black">Les Meilleures Émissions</h2>
+        <div className="py-8 px-4 md:px-8 relative">
+            {/* Header */}
+            <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <SectionTitle
+                    icon={TrendingUp}
+                    badge="Tendances"
+                    title="LE TOP"
+                    highlight="DE LA SEMAINE"
+                    color="srtb-yellow"
+                />
+
+                <div className="hidden md:flex gap-3">
+                    <button onClick={() => scroll('left')} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all group">
+                        <ChevronLeft className="w-6 h-6 text-zinc-400 group-hover:text-white" />
+                    </button>
+                    <button onClick={() => scroll('right')} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all group">
+                        <ChevronRight className="w-6 h-6 text-zinc-400 group-hover:text-white" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Desktop & Mobile Responsive Grid/Scroll */}
+            <div
+                ref={scrollRef}
+                className="flex md:grid md:grid-cols-3 lg:grid-cols-6 gap-6 overflow-x-auto md:overflow-visible scrollbar-hide pb-8"
+                style={{ scrollbarWidth: 'none' }}
+            >
+                {topShows.map((show, index) => (
+                    <div key={show.id} className="min-w-[220px] md:min-w-0">
+                        <RankCard show={show} index={index} />
                     </div>
-                    <p className="text-gray-400 text-xs md:text-sm">Les contenus les plus populaires de la semaine</p>
-                </div>
-
-                {/* Scroll Buttons - Hidden on mobile */}
-                <div className="hidden lg:flex gap-2">
-                    <button
-                        onClick={() => scroll('left')}
-                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-white" />
-                    </button>
-                    <button
-                        onClick={() => scroll('right')}
-                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-                    >
-                        <ChevronRight className="w-5 h-5 text-white" />
-                    </button>
-                </div>
+                ))}
             </div>
-
-            {/* Shows - Grid on Desktop, Horizontal Scroll on Mobile */}
-            <div className="relative">
-                {/* Mobile: Horizontal Scroll */}
-                <div
-                    ref={scrollRef}
-                    className="flex md:hidden gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    {topShows.map((show, index) => (
-                        <motion.div
-                            key={show.id}
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.08 }}
-                            className="group relative cursor-pointer flex-shrink-0 w-[160px]"
-                        >
-                            {/* Card */}
-                            <div className="relative rounded-xl overflow-hidden aspect-[2/3] shadow-lg">
-                                {/* Image */}
-                                <img
-                                    src={show.image}
-                                    alt={show.title}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80"></div>
-
-                                {/* Rank Number */}
-                                <div className="absolute top-2 left-2 z-20">
-                                    <div
-                                        className="text-5xl font-black leading-none"
-                                        style={{
-                                            WebkitTextStroke: '2px rgba(255,255,255,0.3)',
-                                            color: 'transparent',
-                                            textShadow: '0 4px 20px rgba(0,0,0,0.8)'
-                                        }}
-                                    >
-                                        {show.rank}
-                                    </div>
-                                </div>
-
-                                {/* Badge */}
-                                {show.badge && (
-                                    <div className="absolute top-2 right-2 z-20 bg-srtb-green px-2 py-0.5 rounded text-white text-xs font-bold uppercase">
-                                        {show.badge}
-                                    </div>
-                                )}
-
-                                {/* Info - Bottom */}
-                                <div className="absolute bottom-0 inset-x-0 p-2 z-20">
-                                    <h3 className="text-white font-bold text-xs mb-0.5 line-clamp-2">
-                                        {show.title}
-                                    </h3>
-                                    <span className="text-gray-300 text-xs">{show.channel}</span>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Desktop/Tablet: Grid */}
-                <div className="hidden md:grid grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-                    {topShows.map((show, index) => (
-                        <motion.div
-                            key={show.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ y: -8, scale: 1.03 }}
-                            className="group relative cursor-pointer"
-                        >
-                            {/* Card */}
-                            <div className="relative rounded-xl overflow-hidden aspect-[2/3] shadow-lg">
-                                {/* Image */}
-                                <img
-                                    src={show.image}
-                                    alt={show.title}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
-
-                                {/* Rank Number - Large and Prominent */}
-                                <div className="absolute top-2 md:top-3 left-2 md:left-3 z-20">
-                                    <div
-                                        className="text-5xl md:text-7xl font-black leading-none"
-                                        style={{
-                                            WebkitTextStroke: '2px rgba(255,255,255,0.3)',
-                                            color: 'transparent',
-                                            textShadow: '0 4px 20px rgba(0,0,0,0.8)'
-                                        }}
-                                    >
-                                        {show.rank}
-                                    </div>
-                                </div>
-
-                                {/* Badge */}
-                                {show.badge && (
-                                    <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 bg-srtb-green px-2 py-0.5 md:py-1 rounded text-white text-xs font-bold uppercase">
-                                        {show.badge}
-                                    </div>
-                                )}
-
-                                {/* Play Button on Hover */}
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                    <div className="w-12 md:w-14 h-12 md:h-14 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center border-2 border-white/50">
-                                        <Play className="w-5 md:w-6 h-5 md:h-6 text-white fill-white ml-1" />
-                                    </div>
-                                </div>
-
-                                {/* Info - Bottom */}
-                                <div className="absolute bottom-0 inset-x-0 p-2 md:p-3 z-20">
-                                    <h3 className="text-white font-bold text-xs md:text-sm mb-0.5 md:mb-1 line-clamp-2">
-                                        {show.title}
-                                    </h3>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-gray-300 text-xs">{show.channel}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-
-            <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
         </div>
     );
 }

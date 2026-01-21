@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Play, Plus, Info, Clock, Eye, Calendar } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Play, Plus, Eye, Calendar, Clock, Sparkles } from 'lucide-react';
+import SectionTitle from './SectionTitle';
 
 export default function ContentRow({ title, items, variant = 'default' }) {
     const rowRef = useRef(null);
@@ -32,29 +33,30 @@ export default function ContentRow({ title, items, variant = 'default' }) {
     const getCardClass = () => {
         switch (variant) {
             case 'large':
-                return 'w-[280px] aspect-[2/3]';
+                return 'w-[280px] aspect-[2/3]'; // Poster/Portrait
             case 'wide':
-                return 'w-[400px] aspect-video';
-            case 'square':
-                return 'w-[240px] aspect-square';
+                return 'w-[450px] aspect-[21/9]'; // Cinematic Extra Wide
+            case 'news':
+                return 'w-[260px] aspect-video'; // Compact News
+            case 'spotlight':
+                return 'w-[500px] aspect-[21/9]'; // Major Highlight
             default:
-                return 'w-[320px] aspect-video';
+                return 'w-[320px] aspect-video'; // Standard
         }
     };
 
     return (
-        <div className="py-6 relative group/row">
-            {/* Title - Only show if provided */}
+        <div className="py-4 relative group/row">
+            {/* Title - Using New Standard Component */}
             {title && (
-                <div className="flex items-center justify-between mb-4 px-4">
-                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
-                        <span className="h-8 w-1 bg-srtb-green rounded-full" />
-                        {title}
-                    </h2>
-                    <button className="text-sm flex items-center gap-1 transition-colors hover:text-srtb-green" style={{ color: 'var(--text-secondary)' }}>
-                        Voir tout
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
+                <div className="px-4 mb-2">
+                    <SectionTitle
+                        icon={Sparkles}
+                        badge="Découverte"
+                        title="NOTRE"
+                        highlight="SÉLECTION"
+                        color="srtb-green"
+                    />
                 </div>
             )}
 
@@ -62,13 +64,13 @@ export default function ContentRow({ title, items, variant = 'default' }) {
             <div className="relative">
                 <button
                     onClick={() => scroll('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 w-12 h-full bg-gradient-to-r from-black/80 to-transparent flex items-center justify-start opacity-0 group-hover/row:opacity-100 transition-opacity pl-2"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 w-12 h-full bg-black/80 flex items-center justify-start opacity-0 group-hover/row:opacity-100 transition-opacity pl-2"
                 >
                     <ChevronLeft className="w-8 h-8 text-white" />
                 </button>
                 <button
                     onClick={() => scroll('right')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-full bg-gradient-to-l from-black/80 to-transparent flex items-center justify-end opacity-0 group-hover/row:opacity-100 transition-opacity pr-2"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-full bg-black/80 flex items-center justify-end opacity-0 group-hover/row:opacity-100 transition-opacity pr-2"
                 >
                     <ChevronRight className="w-8 h-8 text-white" />
                 </button>
@@ -147,12 +149,15 @@ export default function ContentRow({ title, items, variant = 'default' }) {
                                         }}
                                     />
 
-                                    {/* Subtle Text Overlay - Always Visible */}
-                                    <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10">
-                                        <h3 className="text-white font-semibold text-xs mb-0.5 line-clamp-2 leading-tight">
-                                            {title}
-                                        </h3>
-                                        <p className="text-gray-300 text-xs">
+                                    {/* Solid Text Overlay - Using Section Colors for Variety */}
+                                    <div className={`absolute bottom-0 inset-x-0 p-3 z-10 ${variant === 'news' ? 'bg-zinc-800' : 'bg-zinc-900'} border-t border-white/5`}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            {variant === 'news' && <div className="w-1.5 h-1.5 bg-srtb-green rounded-full pulse" />}
+                                            <h3 className="text-white font-black text-xs line-clamp-2 leading-tight uppercase tracking-tight">
+                                                {title}
+                                            </h3>
+                                        </div>
+                                        <p className="text-gray-400 text-[10px] font-bold">
                                             {channel || category}
                                         </p>
                                     </div>
