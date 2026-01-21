@@ -1,0 +1,29 @@
+# Task Checklist - SRTB Landing Page
+
+- [x] Research & Planning
+    - [x] Read `Brief.md`
+    - [x] Inspect `src` directory
+    - [x] Check `package.json` for dependencies
+    - [x] Create `implementation_plan.md`
+- [/] Implementation
+    - [x] Install dependencies (start with `framer-motion`, `lucide-react`)
+    - [x] Configure Tailwind CSS (Theme colors, fonts)
+    - [x] Fix Navbar/Sidebar overlap issues
+    - [x] Integrate Youtube Data API to fetch real videos
+    - [x] Replace Hero section broken video with YouTube embed
+    - [x] Move social links from Navbar to Footer
+    - [x] Replace hamburger menu with BPLAY logo
+    - [x] Fix video thumbnails and hover effects
+    - [ ] Verify final UI polishs
+    - [x] Design System Setup (`index.css`)
+- [x] Implementation
+    - [x] Install dependencies
+    - [x] Basic Components
+- [x] **Redesign (The Real Wow Factor)**
+    - [x] **Hero Overhaul**: Fix broken video, use sophisticated typography, asymmetrical layout.
+    - [x] **Sidebar**: Glassmorphism Rail that blends perfectly.
+    - [x] **Global Theme**: Add "Ambient Light" (Glows/Gradients) to remove the "dead dark" feel.
+    - [x] **Interactions**: Refine hover states to be premium and fluid (less jumpy).
+    - [x] **Data**: Use reliable image sources for the demo.
+- [x] Verification
+    - [x] User Review (Completely Redesigned)
