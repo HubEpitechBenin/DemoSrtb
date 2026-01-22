@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, ChevronDown, Grid, Layers, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import bplayLogo from '../assets/bplay_logo.png';
 
 // Categories from the reference image
 const categories = [
@@ -149,10 +150,12 @@ export default function Navbar() {
             {/* Left side: Logo + Burger Menus */}
             <div className="flex items-center gap-4 md:gap-6">
                 {/* BPLAY Logo */}
-                <h1 className="text-2xl md:text-3xl font-black tracking-tighter cursor-pointer">
-                    <span className="text-srtb-green">B</span>
-                    <span style={{ color: 'var(--text-primary)' }}>PLAY</span>
-                </h1>
+                {/* BPLAY Logo */}
+                <img
+                    src="/src/assets/bplay_logo.png"
+                    alt="BPLAY"
+                    className="h-8 md:h-10 cursor-pointer object-contain"
+                />
 
                 {/* Burger Menus */}
                 <div className="flex items-center gap-1 md:gap-2">

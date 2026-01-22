@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Facebook, Instagram, Youtube, Twitter, Linkedin, Globe, Mail, Phone, MapPin } from 'lucide-react';
+import bplayLogo from '../assets/bplay_logo.png';
 
 const footerLinks = [
     {
@@ -38,10 +39,13 @@ export default function Footer() {
                             whileInView={{ opacity: 1, y: 0 }}
                             className="mb-8"
                         >
-                            <h3 className="text-3xl font-black mb-6 flex items-center gap-2">
-                                <span className="bg-srtb-green text-white px-2 py-1 rounded">B</span>
-                                <span className="text-white tracking-widest">PLAY</span>
-                            </h3>
+                            <div className="mb-6">
+                                <img
+                                    src={bplayLogo}
+                                    alt="BPLAY"
+                                    className="h-12 object-contain"
+                                />
+                            </div>
                             <p className="text-zinc-400 text-sm leading-relaxed max-w-sm">
                                 Vivez l'excellence médiatique avec SRTB BPLAY. Votre fenêtre premium sur l'information,
                                 la culture et le divertissement au Bénin et en Afrique.
