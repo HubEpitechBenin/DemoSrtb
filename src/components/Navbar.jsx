@@ -152,7 +152,7 @@ export default function Navbar() {
                 {/* BPLAY Logo */}
                 {/* BPLAY Logo */}
                 <img
-                    src="/src/assets/bplay_logo.png"
+                    src={bplayLogo}
                     alt="BPLAY"
                     className="h-8 md:h-10 cursor-pointer object-contain"
                 />
